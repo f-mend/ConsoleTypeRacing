@@ -79,7 +79,11 @@ namespace ConsoleTypeRacing
         }
         public bool isKeyCorrect(char keyPress)
         {
-            if (keyPress == GameAnswer[CurrentPosition])
+            if (CurrentPosition>  GameAnswer.Length)
+            {
+                return false;
+            }
+            else if (keyPress == GameAnswer[CurrentPosition])
             {
                 return true;
             }

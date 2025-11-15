@@ -19,5 +19,10 @@ namespace ConsoleTypeRacing
         // HttpClient HTTPClient = new HttpClient();
 
 
+
+        // handle basic authentication
+
+        // return json object of text found at random location between 1-700 (this is worth investigating better ways of working with shitty apis)
+
     }
 }
