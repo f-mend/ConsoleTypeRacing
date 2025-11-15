@@ -11,26 +11,30 @@ namespace ConsoleTypeRacing
         // This class will be responsible for tracking the accuracy of the user's typing.
         // It may include methods to calculate accuracy percentage, count errors, and provide feedback to the user.
         private string _userInput = "";
-        private int _remainingCharacters = 0;
         private string _gameAnswer = "";
-        private int _currentPosition = 0;
 
-        public string UserInput { get { return _userInput; } set { _userInput = value; } }
-        public int RemainingCharacters { get { return _remainingCharacters; } set { _remainingCharacters = value; } }
-        public string GameAnswer { get { return _gameAnswer; } private set { _gameAnswer = value; } }
-        public int CurrentPosition { get { return _currentPosition; } private set { _currentPosition = value; } }
+        private int _currentPosition = 0;
+        private int _totalKeyPresses = 0;
+        private int _totalCorrectKeyPresses = 0;
+
+
+        public string UserInput { get => _userInput; set => _userInput = value; }
+        public string GameAnswer { get => _gameAnswer; private set => _gameAnswer = value; }
+        public int CurrentPosition { get => _currentPosition; private set => _currentPosition = value; }
+        public int TotalKeyPresses { get => _totalKeyPresses; private set => _totalKeyPresses = value; }
+        public int TotalCorrectKeyPresses { get => _totalCorrectKeyPresses; private set => _totalCorrectKeyPresses = value; }
 
 
         public InputEvaluation(string answer)
         {
             GameAnswer = answer;
-            RemainingCharacters = GameAnswer.Length;
         }
 
-
-        private void UpdateRemainingCharacters()
+        public void HandleUserInput(char newInput)
         {
-            RemainingCharacters = GameAnswer.Length - UserInput.Length;
+            UpdateUserInput(newInput);
+            IncrementCurrentPosition();
+
         }
         private void EmptyUserInput()
         {
@@ -39,26 +43,9 @@ namespace ConsoleTypeRacing
                 UserInput = "";
             }
         }
-        public void UpdateUserInput(char newInput)
+        private void UpdateUserInput(char newInput)
         {
             UserInput = UserInput + newInput;
-            IncrementCurrentPosition();
-            UpdateRemainingCharacters();
-        }
-        public void RemoveLastInputFromUserInput()
-        {
-            if (CurrentPosition - 1 <= 0)
-            {
-                EmptyUserInput();
-                CurrentPosition = 0;
-                UpdateRemainingCharacters();
-            }
-            else
-            {
-                UserInput = UserInput.Substring(0, UserInput.Length - 1);
-                DecrementCurrentPosition();
-                UpdateRemainingCharacters();
-            }
         }
         private void IncrementCurrentPosition()
         {
@@ -68,8 +55,12 @@ namespace ConsoleTypeRacing
         {
             CurrentPosition--;
         }
+
+
         public int CalculateAccuracy()
         {
+            //flawed, always 100% by the time you finish lol
+            //need to evaluate the total characters used to finish / characters in the answer (same as # of correct possible keystrokes)
             int charactersCorrect = 0;
             int minLength = Math.Min(UserInput.Length, GameAnswer.Length);
             for (int i = 0; i < UserInput.Length; i++)
@@ -89,7 +80,11 @@ namespace ConsoleTypeRacing
                 float accuracy = (float)charactersCorrect / minLength * 100;
                 return (int)Math.Round(accuracy);
             }
-            
+
+        }
+        public void CalculateWPM()
+        {
+            throw new NotImplementedException();
         }
         public int GetFirstErrorPosition()
         {
@@ -105,6 +100,20 @@ namespace ConsoleTypeRacing
             return posFirstError;
         }
 
+
+        public void RemoveLastInputFromUserInput()
+        {
+            if (CurrentPosition - 1 <= 0)
+            {
+                EmptyUserInput();
+                CurrentPosition = 0;
+            }
+            else
+            {
+                UserInput = UserInput.Substring(0, UserInput.Length - 1);
+                DecrementCurrentPosition();
+            }
+        }
     }
 }
 

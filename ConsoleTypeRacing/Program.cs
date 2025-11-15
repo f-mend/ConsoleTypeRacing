@@ -36,12 +36,11 @@ namespace ConsoleTypeRacing
                 }
                 else
                 {
-                    TextKing.UpdateUserInput(keyPress.KeyChar);
+                    TextKing.HandleUserInput(keyPress.KeyChar);
                 }
 
-                Console.Clear();
-                Console.WriteLine($"Your Prompt: \n{TextKing.GameAnswer}\n\n");
-                Console.WriteLine($"Your position: {TextKing.RemainingCharacters}");
+                //Console.Clear();
+                //Console.WriteLine($"Your Prompt: \n{TextKing.GameAnswer}\n\n");
                 UserInputWithColoration(TextKing.UserInput, TextKing.GameAnswer, TextKing.GetFirstErrorPosition());
                 
             } // Two ways out. Either quit by hitting escape, or complete the text puzzle.
