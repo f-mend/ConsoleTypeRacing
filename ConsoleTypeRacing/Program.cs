@@ -16,7 +16,7 @@ namespace ConsoleTypeRacing
             // we may also try and implement a visual race on the console window where the user can see their progress as they type.
             // still need to ask for difficulty, get different lengths of strings based n difficulty
 
-
+            // eventually this will be replaced with the return value of our fetch game data class return result
             var TextKing = new InputEvaluation("The quick brown fox jumps over the lazy dog.");
             
             bool running = true;
@@ -24,25 +24,25 @@ namespace ConsoleTypeRacing
             do
             {
                 var keyPress = Console.ReadKey(intercept: true);
-                // move this logic into a method elsewhere, probably into a TextEvaluation Class that handles the WPM, AccuracyCalc,
+                bool isStringCorrect = TextKing.isKeyCorrect(keyPress.KeyChar);
                 if (keyPress.Key == ConsoleKey.Backspace)
                 {
                     TextKing.RemoveLastInputFromUserInput();
+
                 }
                 else if (keyPress.Key == ConsoleKey.Escape)
                 {
                     running = false;
                     break;
                 }
-                else
+                else 
                 {
                     TextKing.HandleUserInput(keyPress.KeyChar);
-                }
+                    TextKing.InrecmentTotalKeyPresses();
+                    UserInputWithColoration(keyPress.KeyChar, isStringCorrect);
+                }                
 
-                //Console.Clear();
-                //Console.WriteLine($"Your Prompt: \n{TextKing.GameAnswer}\n\n");
-                UserInputWithColoration(TextKing.UserInput, TextKing.GameAnswer, TextKing.GetFirstErrorPosition());
-                
+
             } // Two ways out. Either quit by hitting escape, or complete the text puzzle.
             while (TextKing.UserInput != TextKing.GameAnswer && running);
 
@@ -50,14 +50,16 @@ namespace ConsoleTypeRacing
 
             if (running)
             {
-                Console.WriteLine($"You were suppose to type: {TextKing.GameAnswer}\n");
-                Console.WriteLine($"Your final attempt: {TextKing.UserInput}");
-                Console.WriteLine($"Your Current Accuracy: {TextKing.CalculateAccuracy()}%");
+                Console.WriteLine($"Your prompt was: {TextKing.GameAnswer}\n");
+                Console.WriteLine($"You typedt: {TextKing.UserInput}");
+                Console.WriteLine($"Your Overall Accuracy: {TextKing.CalculateAccuracy()}%");
+                Console.WriteLine($"You made {TextKing.TotalKeyPresses - TextKing.TotalCorrectKeyPressesPossible} mistakes");
+
 
             }
             else
             {
-                Console.WriteLine($"You were suppose to type: {TextKing.GameAnswer}\n");
+                Console.WriteLine($"Your prompt was: {TextKing.GameAnswer}\n");
                 Console.WriteLine($"Instead you quit...\n");
                 Console.WriteLine($"Your attempt before quitting was: {TextKing.UserInput}");
             }
@@ -65,23 +67,19 @@ namespace ConsoleTypeRacing
             Console.ReadKey();
         }
 
-
-        public static void UserInputWithColoration(string input, string answer, int positionOfError)
+        public static void UserInputWithColoration(char input, bool isCorrect)
         {
-            // No Errors Found
-            if (positionOfError == -1)
+            if (isCorrect)
             {
                 Console.Write($"{input}");
             }
-            else
+            else 
             {
-                string correctText = input.Substring(0, positionOfError);
-                string textAfterMistake = input.Substring(positionOfError);
-                Console.Write($"{correctText}");
                 Console.BackgroundColor = ConsoleColor.Red;
-                Console.Write($"{textAfterMistake}");
-                Console.ResetColor();
+                Console.Write($"{input}");
+
             }
+            Console.ResetColor();
         }
 
     }
