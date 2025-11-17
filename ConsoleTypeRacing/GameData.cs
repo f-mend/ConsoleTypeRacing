@@ -42,26 +42,14 @@ namespace ConsoleTypeRacing
             var byteArray = Encoding.ASCII.GetBytes($"{_username}:{_password}");
             _HTTPClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
             var response = _HTTPClient.GetAsync($"https://data.typeracer.com/api/v1/texts/{RandNum}").Result;
             var content = response.Content.ReadAsStringAsync().Result;
             var doc = JsonDocument.Parse(content);
             var root = doc.RootElement;
-
             string text = root.GetProperty("data").GetProperty("text").GetString();
-
             return text;
         }
 
-        private void ParseJSONforText()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ReturnGamePrompt()
-        {
-            throw new NotImplementedException();
-        }
         private void GetUsernameAndPassword()
         {
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\secrets.txt");
