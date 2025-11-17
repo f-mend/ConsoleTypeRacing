@@ -24,7 +24,7 @@ namespace ConsoleTypeRacing
         public int CurrentPosition { get => _currentPosition; private set => _currentPosition = value; }
         public int TotalKeyPresses { get => _totalKeyPresses; private set => _totalKeyPresses = value; }
         public int TotalCorrectKeyPressesPossible { get => _totalCorrectKeyPresses; private set => _totalCorrectKeyPresses = value; }
-
+            
         public GameEvaluation(string answer)
         {
             GameAnswer = answer;
@@ -45,30 +45,30 @@ namespace ConsoleTypeRacing
         {
             CurrentPosition++;
         }
+        private void InrecmentTotalKeyPresses()
+        {
+            TotalKeyPresses++;
+        }
         private void DecrementCurrentPosition()
         {
             CurrentPosition--;
         }
         
         
-        public int CalculateAccuracy()
+        public int GetAccuracy()
         {
             float accuracy = (float)TotalCorrectKeyPressesPossible / TotalKeyPresses * 100;
             return (int)Math.Round(accuracy);
         }
-        public double CalculateWPM(double durationElapsed)
+        public double GetWPM(double durationElapsed)
         {
             double wpm = (TotalKeyPresses * 60.0) / (5.0 * durationElapsed);
             return Math.Round(wpm, 2); 
         }
-        public double CalculateAWPM(double wpm, int accuracy)
+        public double GetAWPM(double wpm, int accuracy)
         {
             double AWPM =  wpm * (accuracy / 100.0);
             return Math.Round(AWPM, 2);
-        }
-        public void InrecmentTotalKeyPresses()
-        {
-            TotalKeyPresses++;
         }
         public bool isKeyCorrect(char keyPress)
         {
@@ -87,6 +87,7 @@ namespace ConsoleTypeRacing
         {
             UpdateUserInput(newInput);
             IncrementCurrentPosition();
+            InrecmentTotalKeyPresses();
         }
         public void RemoveLastInputFromUserInput()
         {
@@ -94,13 +95,11 @@ namespace ConsoleTypeRacing
             {
                 EmptyUserInput();
                 CurrentPosition = 0;
-                Console.Write("\b \b");
             }
             else
             {
                 UserInput = UserInput.Substring(0, UserInput.Length - 1);
                 DecrementCurrentPosition();
-                Console.Write("\b \b"); //this handles removing and moving back a space in the writeline so that we can have text editor like qualities
             }
         }
     }

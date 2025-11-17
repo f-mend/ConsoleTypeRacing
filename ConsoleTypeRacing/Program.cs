@@ -40,6 +40,7 @@ namespace ConsoleTypeRacing
                 else if (keyPress.Key == ConsoleKey.Backspace)
                 {
                     textKing.RemoveLastInputFromUserInput();
+                    Console.Write("\b \b");
 
                 }
                 else if (keyPress.Key == ConsoleKey.Escape)
@@ -51,7 +52,6 @@ namespace ConsoleTypeRacing
                 {
                     bool isStringCorrect = textKing.isKeyCorrect(keyPress.KeyChar);
                     textKing.HandleUserInput(keyPress.KeyChar);
-                    textKing.InrecmentTotalKeyPresses();
                     UserInputWithColoration(keyPress.KeyChar, isStringCorrect);
                 }
 
@@ -63,8 +63,8 @@ namespace ConsoleTypeRacing
             if (running)
             {   //calculate gamedata if we didnt quit
                 double seconds = stopwatch.Elapsed.TotalSeconds;
-                double wpm = textKing.CalculateWPM(seconds);
-                int accuracy = textKing.CalculateAccuracy();
+                double wpm = textKing.GetWPM(seconds);
+                int accuracy = textKing.GetAccuracy();
 
                 Console.WriteLine($"Your prompt was:\n{textKing.GameAnswer}");
                 Console.WriteLine($"You typed:\n{textKing.UserInput}\n");
@@ -73,7 +73,7 @@ namespace ConsoleTypeRacing
                 Console.WriteLine($"\t  Your WPM was: {wpm}");
                 Console.WriteLine($"\t  Your Overall Accuracy: {accuracy}%");
                 Console.WriteLine($"\t  You made {textKing.TotalKeyPresses - textKing.TotalCorrectKeyPressesPossible} mistakes");
-                Console.WriteLine($"\t  Your AWPM was: {textKing.CalculateAWPM(wpm, accuracy)}");
+                Console.WriteLine($"\t  Your AWPM was: {textKing.GetAWPM(wpm, accuracy)}");
 
             }
             else
