@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleTypeRacing
 {
-    internal class InputEvaluation
+    internal class GameEvaluation
     {
         // This class will be responsible for tracking the accuracy of the user's typing.
         // It may include methods to calculate accuracy percentage, count errors, and provide feedback to the user.
@@ -18,15 +19,13 @@ namespace ConsoleTypeRacing
         private int _totalKeyPresses = 0;
         private int _totalCorrectKeyPresses = 0;
 
-
         public string UserInput { get => _userInput; set => _userInput = value; }
         public string GameAnswer { get => _gameAnswer; private set => _gameAnswer = value; }
         public int CurrentPosition { get => _currentPosition; private set => _currentPosition = value; }
         public int TotalKeyPresses { get => _totalKeyPresses; private set => _totalKeyPresses = value; }
         public int TotalCorrectKeyPressesPossible { get => _totalCorrectKeyPresses; private set => _totalCorrectKeyPresses = value; }
 
-
-        public InputEvaluation(string answer)
+        public GameEvaluation(string answer)
         {
             GameAnswer = answer;
             TotalCorrectKeyPressesPossible = GameAnswer.Length;
@@ -50,9 +49,6 @@ namespace ConsoleTypeRacing
         {
             CurrentPosition--;
         }
-
-        // All above are private and only accessible from inside the class instance
-        // All below are public for use around the main 
         
         
         public int CalculateAccuracy()
@@ -60,18 +56,15 @@ namespace ConsoleTypeRacing
             float accuracy = (float)TotalCorrectKeyPressesPossible / TotalKeyPresses * 100;
             return (int)Math.Round(accuracy);
         }
-        public int CalculateWPM()
+        public double CalculateWPM(double durationElapsed)
         {
-            // Total Number of Words = Total Keys Pressed / 5
-            // WPM = Total Number of Words / Time Elapsed in Minutes(rounded down)
-            throw new NotImplementedException();
+            double wpm = (TotalKeyPresses * 60.0) / (5.0 * durationElapsed);
+            return Math.Round(wpm, 2); 
         }
-        public int CalculateAWPM(int wpm, int accuracy)
+        public double CalculateAWPM(double wpm, int accuracy)
         {
-            // WPM = 26
-            // Accuracy = 85 %
-            // AWPM = 26 x .85 = 22
-            throw new NotImplementedException();
+            double AWPM =  wpm * (accuracy / 100.0);
+            return Math.Round(AWPM, 2);
         }
         public void InrecmentTotalKeyPresses()
         {
@@ -79,7 +72,7 @@ namespace ConsoleTypeRacing
         }
         public bool isKeyCorrect(char keyPress)
         {
-            if (CurrentPosition>  GameAnswer.Length)
+            if (CurrentPosition >= GameAnswer.Length)
             {
                 return false;
             }

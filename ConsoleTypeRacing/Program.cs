@@ -1,7 +1,8 @@
 ﻿using System.IO.Pipes;
 using System.Net;
 using System.Reflection.Emit;
-using System.Threading;
+using System.Diagnostics;
+
 
 namespace ConsoleTypeRacing
 {
@@ -15,19 +16,30 @@ namespace ConsoleTypeRacing
             // finally we will write results and keep track of progress over time with a local database or file storage (TBD).
             // we may also try and implement a visual race on the console window where the user can see their progress as they type.
             // still need to ask for difficulty, get different lengths of strings based n difficulty
+            var data = new GameData();
+            var stopwatch = new Stopwatch();
+            var textKing = new GameEvaluation(data.GenerateGameData());
 
-            // eventually this will be replaced with the return value of our fetch game data class return result
-            var TextKing = new InputEvaluation("The quick brown fox jumps over the lazy dog.");
-            
             bool running = true;
-            Console.WriteLine($"Your Prompt: \n{TextKing.GameAnswer}\n");
+
+            Console.WriteLine($"Your Prompt: \n{textKing.GameAnswer}\n");
             do
             {
                 var keyPress = Console.ReadKey(intercept: true);
-                bool isStringCorrect = TextKing.isKeyCorrect(keyPress.KeyChar);
-                if (keyPress.Key == ConsoleKey.Backspace)
+                // Start the stopwatch on first keystroke
+                if (!stopwatch.IsRunning)
                 {
-                    TextKing.RemoveLastInputFromUserInput();
+                    stopwatch.Start();
+                }
+
+                if (keyPress.Key == ConsoleKey.Enter) //skip, we dont want new lines
+                {
+                    continue;
+
+                }
+                else if (keyPress.Key == ConsoleKey.Backspace)
+                {
+                    textKing.RemoveLastInputFromUserInput();
 
                 }
                 else if (keyPress.Key == ConsoleKey.Escape)
@@ -35,33 +47,38 @@ namespace ConsoleTypeRacing
                     running = false;
                     break;
                 }
-                else 
+                else
                 {
-                    TextKing.HandleUserInput(keyPress.KeyChar);
-                    TextKing.InrecmentTotalKeyPresses();
+                    bool isStringCorrect = textKing.isKeyCorrect(keyPress.KeyChar);
+                    textKing.HandleUserInput(keyPress.KeyChar);
+                    textKing.InrecmentTotalKeyPresses();
                     UserInputWithColoration(keyPress.KeyChar, isStringCorrect);
-                }                
+                }
 
 
             } // Two ways out. Either quit by hitting escape, or complete the text puzzle.
-            while (TextKing.UserInput != TextKing.GameAnswer && running);
-
+            while (textKing.UserInput != textKing.GameAnswer && running);
+            stopwatch.Stop();
             Console.Clear();
-
             if (running)
-            {
-                Console.WriteLine($"Your prompt was: {TextKing.GameAnswer}\n");
-                Console.WriteLine($"You typedt: {TextKing.UserInput}");
-                Console.WriteLine($"Your Overall Accuracy: {TextKing.CalculateAccuracy()}%");
-                Console.WriteLine($"You made {TextKing.TotalKeyPresses - TextKing.TotalCorrectKeyPressesPossible} mistakes");
+            {   //calculate gamedata if we didnt quit
+                double seconds = stopwatch.Elapsed.TotalSeconds;
+                double wpm = textKing.CalculateWPM(seconds);
+                int accuracy = textKing.CalculateAccuracy();
 
+                Console.WriteLine($"Your prompt was: {textKing.GameAnswer}\n");
+                Console.WriteLine($"You typed: {textKing.UserInput}\n");
+
+                Console.WriteLine($"\tPost Game Stats:");
+                Console.WriteLine($"Your WPM was: {wpm}");
+                Console.WriteLine($"Your Overall Accuracy: {accuracy}%");
+                Console.WriteLine($"You made {textKing.TotalKeyPresses - textKing.TotalCorrectKeyPressesPossible} mistakes");
+                Console.WriteLine($"Your AWPM was: {textKing.CalculateAWPM(wpm, accuracy)}");
 
             }
             else
             {
-                Console.WriteLine($"Your prompt was: {TextKing.GameAnswer}\n");
-                Console.WriteLine($"Instead you quit...\n");
-                Console.WriteLine($"Your attempt before quitting was: {TextKing.UserInput}");
+                Console.WriteLine($"You Quit...\n");
             }
             Thread.Sleep(2000);
             Console.ReadKey();
@@ -81,6 +98,5 @@ namespace ConsoleTypeRacing
             }
             Console.ResetColor();
         }
-
     }
 }
