@@ -18,11 +18,11 @@ namespace ConsoleTypeRacing
             // still need to ask for difficulty, get different lengths of strings based n difficulty
             var data = new GameData();
             var stopwatch = new Stopwatch();
-            var textKing = new GameEvaluation(data.GenerateGameData());
+            var textKing = new GameEvaluation(data.GetGameText());
 
             bool running = true;
 
-            Console.WriteLine($"Your Prompt: \n{textKing.GameAnswer}\n");
+            Console.WriteLine($"Your Prompt:\n{textKing.GameAnswer}\n");
             do
             {
                 var keyPress = Console.ReadKey(intercept: true);
@@ -66,19 +66,19 @@ namespace ConsoleTypeRacing
                 double wpm = textKing.CalculateWPM(seconds);
                 int accuracy = textKing.CalculateAccuracy();
 
-                Console.WriteLine($"Your prompt was: {textKing.GameAnswer}\n");
-                Console.WriteLine($"You typed: {textKing.UserInput}\n");
+                Console.WriteLine($"Your prompt was:\n{textKing.GameAnswer}");
+                Console.WriteLine($"You typed:\n{textKing.UserInput}\n");
 
                 Console.WriteLine($"\tPost Game Stats:");
-                Console.WriteLine($"Your WPM was: {wpm}");
-                Console.WriteLine($"Your Overall Accuracy: {accuracy}%");
-                Console.WriteLine($"You made {textKing.TotalKeyPresses - textKing.TotalCorrectKeyPressesPossible} mistakes");
-                Console.WriteLine($"Your AWPM was: {textKing.CalculateAWPM(wpm, accuracy)}");
+                Console.WriteLine($"\t  Your WPM was: {wpm}");
+                Console.WriteLine($"\t  Your Overall Accuracy: {accuracy}%");
+                Console.WriteLine($"\t  You made {textKing.TotalKeyPresses - textKing.TotalCorrectKeyPressesPossible} mistakes");
+                Console.WriteLine($"\t  Your AWPM was: {textKing.CalculateAWPM(wpm, accuracy)}");
 
             }
             else
             {
-                Console.WriteLine($"You Quit...\n");
+                Console.WriteLine($"You Quit...");
             }
             Thread.Sleep(2000);
             Console.ReadKey();
@@ -94,7 +94,6 @@ namespace ConsoleTypeRacing
             {
                 Console.BackgroundColor = ConsoleColor.Red;
                 Console.Write($"{input}");
-
             }
             Console.ResetColor();
         }
